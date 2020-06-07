@@ -1,4 +1,5 @@
 const BaseIterator = require("./base-iterator");
+const Row = require("../row");
 const CONSTS = require("../consts");
 
 // For now, since the instructions asked that the final submission not include
@@ -22,7 +23,6 @@ class Join extends BaseIterator {
 
   async pull() {
     if (this.join.length === 0) {
-      // const allRows = await this.fetchAllRows()
       this.join = crossN(await this.fetchAllRows());
     }
 
@@ -52,39 +52,27 @@ class Join extends BaseIterator {
       })
     );
   }
-
-  async getColumnDefinitions() {
-    if (this.columnDefinitions) {
-      return this.columnDefinitions;
-    }
-    const disparateDefinitions = await Promise.all(
-      this.children.map((node) => node.getColumnDefinitions())
-    );
-
-    this.columnDefinitions = disparateDefinitions.reduce((list, def) => {
-      return list.concat(def);
-    }, []);
-
-    return this.columnDefinitions
-  }
 }
 
 function crossTwo(a, b) {
   const result = [];
   for (let i = 0; i < a.length; i++) {
     for (let j = 0; j < b.length; j++) {
-      result.push(a[i].concat(b[j]));
+      result.push(Row.cross(a[i], b[j]));
     }
   }
   return result;
 }
 
-function crossN(lists) {
-  const lastTwo = crossTwo(lists[lists.length - 2], lists[lists.length - 1]);
-  if (lists.length === 2) {
+function crossN(tables) {
+  const lastTwo = crossTwo(
+    tables[tables.length - 2],
+    tables[tables.length - 1]
+  );
+  if (tables.length === 2) {
     return lastTwo;
   } else {
-    return crossN([...lists.slice(0, lists.length - 2), lastTwo]);
+    return crossN([...tables.slice(0, tables.length - 2), lastTwo]);
   }
 }
 

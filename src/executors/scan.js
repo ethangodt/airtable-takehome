@@ -10,6 +10,7 @@ const path = require("path");
 const BaseIterator = require("./base-iterator");
 const Reader = require("../file-reader");
 const CONSTS = require("../consts");
+const Row = require("../row");
 
 class Scan extends BaseIterator {
   constructor(tableName, fileName) {
@@ -22,12 +23,15 @@ class Scan extends BaseIterator {
     if (this.status === CONSTS.ITERATOR_STATUS.FINISHED) {
       return CONSTS.END;
     }
-    let row = await this.reader.nextLine();
-    if (row === CONSTS.END) {
+    let rawRow = await this.reader.nextLine();
+    if (rawRow === CONSTS.END) {
       this.finish();
       return CONSTS.END;
     } else {
-      return this.stringifyRow(row);
+      return new Row(
+        this.stringifyRow(rawRow),
+        await this.getColumnDefinitions()
+      );
     }
   }
 

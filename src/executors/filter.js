@@ -11,14 +11,10 @@ class Filter extends BaseIterator {
   constructor(predicates, child) {
     super();
     this.child = child;
-    this.predicates = predicates.map(this.makePredicate.bind(this));
+    this.predicates = predicates.map(makePredicate.bind(this));
   }
 
   async pull() {
-    if (!this.columnDefinitions) {
-      this.columnDefinitions = await this.getColumnDefinitions();
-    }
-
     if (this.status === CONSTS.ITERATOR_STATUS.FINISHED) {
       return CONSTS.END;
     }
@@ -38,41 +34,12 @@ class Filter extends BaseIterator {
 
     return approvedRow;
   }
+}
 
-  getCell(description, row) {
-    if (description.literal !== undefined) {
-      return description.literal;
-    }
-    const {
-      column: { name, table },
-    } = description;
-    const columnDefinitions = this.columnDefinitions;
-    const rowIdx = columnDefinitions.findIndex((col) => {
-      let tableMatches = table === col[0];
-      let columnNameMatches = name === col[1];
-      if (!table) {
-        tableMatches = true;
-      }
-      return tableMatches && columnNameMatches;
-    });
-    return row[rowIdx];
-  }
-
-  makePredicate({ op, left, right }) {
-    return (row) => {
-      // console.log(this.getCell(left, row), op, this.getCell(right, row));
-      return comparisons[op](this.getCell(left, row), this.getCell(right, row));
-    };
-  }
-
-  async getColumnDefinitions() {
-    if (this.columnDefinitions) {
-      return this.columnDefinitions;
-    }
-
-    this.columnDefinitions = await this.child.getColumnDefinitions();
-    return this.columnDefinitions;
-  }
+function makePredicate({ op, left, right }) {
+  return (row) => {
+    return comparisons[op](row.getCell(left), row.getCell(right));
+  };
 }
 
 const comparisons = {

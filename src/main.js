@@ -22,7 +22,7 @@ async function start() {
       new Scan("b", "examples/b.table.json"),
     ])
   );
-  console.log(await node.pull());
+  console.log('final', await node.pull());
   console.log(await node.pull());
   console.log(await node.pull());
   console.log(await node.pull());
