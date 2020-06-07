@@ -1,12 +1,27 @@
 const Scan = require("./executors/scan");
 const Join = require("./executors/join");
+const Filter = require("./executors/filter");
 
 async function start() {
-  const node = new Join([
-    new Scan("examples/a.table.json"),
-    new Scan("examples/a.table.json"),
-    new Scan("examples/b.table.json"),
-  ]);
+  const node = new Filter(
+    [
+      {
+        op: ">",
+        left: { column: { name: "distance", table: null } },
+        right: { column: { name: "age", table: "a2" } },
+      },
+      {
+        op: "!=",
+        left: { column: { name: "name", table: "a1" } },
+        right: { literal: "Bob" },
+      },
+    ],
+    new Join([
+      new Scan("a1", "examples/a.table.json"),
+      new Scan("a2", "examples/a.table.json"),
+      new Scan("b", "examples/b.table.json"),
+    ])
+  );
   console.log(await node.pull());
   console.log(await node.pull());
   console.log(await node.pull());

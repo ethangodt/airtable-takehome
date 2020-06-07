@@ -15,15 +15,14 @@ const CONSTS = require("../consts");
 class Join extends BaseIterator {
   constructor(children) {
     super(children);
+    this.children = children;
     this.join = [];
     this.sent = 0;
-    this.columnDefinitions = this.children.reduce((list, node) => {
-      return list.concat(node.columnDefinitions);
-    }, []);
   }
 
   async pull() {
     if (this.join.length === 0) {
+      // const allRows = await this.fetchAllRows()
       this.join = crossN(await this.fetchAllRows());
     }
 
@@ -52,6 +51,21 @@ class Join extends BaseIterator {
         return fetch();
       })
     );
+  }
+
+  async getColumnDefinitions() {
+    if (this.columnDefinitions) {
+      return this.columnDefinitions;
+    }
+    const disparateDefinitions = await Promise.all(
+      this.children.map((node) => node.getColumnDefinitions())
+    );
+
+    this.columnDefinitions = disparateDefinitions.reduce((list, def) => {
+      return list.concat(def);
+    }, []);
+
+    return this.columnDefinitions
   }
 }
 
