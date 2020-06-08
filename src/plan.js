@@ -20,7 +20,7 @@ module.exports = function plan(query) {
     node = scans[0];
   }
   // we may need to filter the table up to this point
-  if (query.where) {
+  if (query.where.length) {
     node = new Filter(query.where, node);
   }
   // we will always have some projection to do

@@ -66,26 +66,29 @@ class Reader {
     };
   }
 
-  async _nextLine() {
+  async _nextRow() {
     this.linesRead++;
     return this.reader.nextLine();
   }
 
-  async nextLine() {
+  async nextRow() {
     if (!fileCache[this.absoluteFilePath].complete && !this.reader) {
       this.reader = await this._initializeModule();
     }
 
+    console.log(this.linesRead);
     if (this.linesRead === 0) {
-      const openingBracket = await this._nextLine();
-      const columnDefinitions = await this._nextLine();
+      const openingBracket = await this._nextRow();
+      const columnDefinitions = await this._nextRow();
+      console.log('col', columnDefinitions);
     }
 
     if (this.hasReadAllLines) {
       return CONSTS.END;
     }
 
-    let row = await this._nextLine();
+    let row = await this._nextRow();
+    console.log('umm', row);
     if (row === CLOSING_BRACKET) {
       // there will be no more rows of usable data, regardless of the file having more lines
       await this.reader.close();

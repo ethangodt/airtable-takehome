@@ -1,11 +1,13 @@
-module.exports = (tableMap, columnDefinitions, query) => {
+const utils = require("./utils");
+
+module.exports = (tableMap, query) => {
   // make sure reference in select are sound
   checkAllColumnRefs(
     query.select.map((s) => s.source),
     tableMap
   );
   // make sure reference in where are sound
-  if (query.where) {
+  if (query.where.length) {
     checkAllColumnRefs(
       query.where.reduce((list, w) => {
         if (!w.left.literal) {
@@ -26,9 +28,9 @@ module.exports = (tableMap, columnDefinitions, query) => {
 function checkAllColumnRefs(columnRefs, tableMap) {
   columnRefs.forEach(({ table, name }) => {
     if (table === null) {
-      const found = findInAllTables(name, tableMap);
+      const found = utils.findInAllTables(name, tableMap);
       if (found.length > 1) {
-        console.log('hel');
+        console.log("hel");
         throw makeAmbiguityError(name, found);
       }
     } else {
@@ -37,20 +39,6 @@ function checkAllColumnRefs(columnRefs, tableMap) {
       }
     }
   });
-}
-
-function findInAllTables(name, tableMap) {
-  const tables = [];
-  for (let tableName in tableMap) {
-    if (tableMap.hasOwnProperty(tableName)) {
-      tableMap[tableName].forEach((columnDefinition) => {
-        if (columnDefinition[0] === name) {
-          tables.push(tableName);
-        }
-      });
-    }
-  }
-  return tables;
 }
 
 function makeTableError(tableName) {

@@ -1,5 +1,5 @@
 const reference = require("./reference");
-// const type = require("./type");
+const type = require("./type");
 const Reader = require("../file-reader");
 const utils = require("../utils");
 
@@ -19,5 +19,5 @@ module.exports = async (query) => {
     return map;
   }, {});
 
-  [reference].forEach((check) => check(tableMap, columnDefinitions, query));
+  [reference, type].forEach((check) => check(tableMap, query));
 };

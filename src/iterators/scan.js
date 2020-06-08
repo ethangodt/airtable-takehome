@@ -25,7 +25,7 @@ class Scan extends BaseIterator {
     if (this.status === CONSTS.ITERATOR_STATUS.FINISHED) {
       return CONSTS.END;
     }
-    let rawRow = await this.reader.nextLine();
+    let rawRow = await this.reader.nextRow();
     if (rawRow === CONSTS.END) {
       this.finish();
       return CONSTS.END;
