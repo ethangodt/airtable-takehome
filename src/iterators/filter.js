@@ -1,3 +1,7 @@
+// The Filter iterator filters the incoming rows using
+// the predicates from the WHERE clause.
+//
+
 const BaseIterator = require("./base-iterator");
 const CONSTS = require("../consts");
 

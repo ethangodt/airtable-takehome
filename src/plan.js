@@ -1,8 +1,8 @@
-// In a "real" system the RDBMS would have a "query planner" that looks at an
+// In a real system the RDBMS would have a "query planner" that looks at an
 // incoming valid query to be executed and generates an efficient plan of iterator
 // nodes. e.g. The information available using the EXPLAIN keyword in postgres.
 //
-// In this case I'm hardly doing any planning, but it could be added later.
+// In this case I'm hardly doing any planning/optimizing, but it could be added later.
 
 const Scan = require("./iterators/scan");
 const Join = require("./iterators/join");

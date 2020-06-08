@@ -1,13 +1,14 @@
+// The iterator responsible for making projections of the incoming rows
+// to the correct output format.
+//
+// In our case, this is also the root node for our chain of iterators. Calling
+// .pull() on this node will retrieve the first result row of the query. Keep
+// pulling to stream the full result table.
+//
+
 const BaseIterator = require("./base-iterator");
 const Row = require("../row");
 const CONSTS = require("../consts");
-
-// [
-//   {"name": "a1_name", "source": {"name": "name", "table": "a1"}},
-//   {"name": "age", "source": {"name": "age", "table": "a1"}},
-//   {"name": "a2_name", "source": {"name": "name", "table": "a2"}},
-//   {"name": "distance", "source": {"name": "distance", "table": "b"}}
-// ]
 
 class Project extends BaseIterator {
   constructor(descriptions, child) {

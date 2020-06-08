@@ -1,7 +1,6 @@
 const fs = require("fs");
 
 const args = process.argv.slice(2);
-
 if (args.length !== 3) {
   console.error("Usage: COMMAND <table-folder> <sql-json-file> <output-file>");
   throw process.exit(1);

@@ -1,7 +1,3 @@
-const BaseIterator = require("./base-iterator");
-const Row = require("../row");
-const CONSTS = require("../consts");
-
 // For now, since the instructions asked that the final submission not include
 // optimizations like indexes or cross-product reordering I will stick with a
 // simple "nested loop" cross join, where every query creates a full
@@ -13,6 +9,11 @@ const CONSTS = require("../consts");
 //
 // It we be fun if we could add something like that later on in the interview process!
 //
+
+const BaseIterator = require("./base-iterator");
+const Row = require("../row");
+const CONSTS = require("../consts");
+
 class Join extends BaseIterator {
   constructor(children) {
     super(children);

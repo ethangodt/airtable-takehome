@@ -1,5 +1,6 @@
-// The Scan iterator retrieves one row at a time. This is not so important
-// for the example tables in this takehome, but in reality table files
+// The file-reader retrieves one row at a time and is used in iterators and validators.
+//
+// This is not so important for the example tables in this takehome, but in reality table files
 // are very large. We would not want to read the whole thing at one time.
 //
 // P.S. I had a bunch of code in here to cache line reads from the file, but it was

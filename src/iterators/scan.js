@@ -1,10 +1,6 @@
 // The Scan iterator does a "file scan" on the DB "heap file"
-// using some underlying file reader class. In this case the
-// underlying reader caches the file and can be reused.
-//
-// Similarly, if a single query uses the same table twice, then
-// our underlying reader will avoid reading duplicate lines from the
-// file on disk if possible.
+// using some underlying file reader class. For us that's just
+// the .json being pulled in one row at a time.
 //
 const path = require("path");
 const BaseIterator = require("./base-iterator");

@@ -19,5 +19,8 @@ module.exports = async (query) => {
     return map;
   }, {});
 
+  // Here we run through all of the validations.
+  // We could easily add more validations to the list.
+  // All a validator needs to do is 'throw' and the errors will be properly handled.
   [reference, type].forEach((check) => check(tableMap, query));
 };

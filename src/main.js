@@ -4,6 +4,7 @@ const fs = require("fs");
 const CONSTS = require("./consts");
 const config = require("./config");
 
+// Everything happens here.
 async function main() {
   const query = loadJsonFromFile(config.SQL_JSON_FILE);
   await validate(query);
