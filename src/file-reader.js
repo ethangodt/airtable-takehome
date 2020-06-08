@@ -39,29 +39,31 @@ class Reader {
   }
 
   async _initializeModule() {
-    const io = await open(this.absoluteFilePath);
-    const nextLine = util.promisify(io.nextLine);
-    const close = util.promisify(io.close);
+    const self = this;
+    const thirdPartyReader = await open(this.absoluteFilePath);
+    const nextLine = util.promisify(thirdPartyReader.nextLine);
+    const close = util.promisify(thirdPartyReader.close);
     return {
-      original: io,
+      original: thirdPartyReader,
       close: close,
-      nextLine: () => {
-        return nextLine();
+      readerLineCount: 0,
+      nextLine: async function () {
+        let row;
+        if (fileCache[self.absoluteFilePath].lines[this.readerLineCount]) {
+          row = fileCache[self.absoluteFilePath].lines[this.readerLineCount];
+        } else {
+          row = await nextLine();
+          fileCache[self.absoluteFilePath].lines[this.readerLineCount] = row;
+        }
+        this.readerLineCount++;
+        return row;
       },
     };
   }
 
   async _nextLine() {
-    let row;
-    // if the row is cached already use it
-    if (fileCache[this.absoluteFilePath].lines[this.linesRead]) {
-      row = fileCache[this.absoluteFilePath].lines[this.linesRead];
-    } else {
-      row = await this.reader.nextLine();
-      fileCache[this.absoluteFilePath].lines[this.linesRead] = row;
-    }
     this.linesRead++;
-    return row;
+    return this.reader.nextLine();
   }
 
   async nextLine() {
@@ -91,14 +93,14 @@ class Reader {
   }
 
   async readLine(num) {
-    const specialReader = await this._initializeModule();
+    const reader = await this._initializeModule();
     let reps = num;
     let line;
     while (reps) {
-      line = specialReader.nextLine();
+      line = reader.nextLine();
       reps--;
     }
-    await specialReader.close();
+    await reader.close();
     return line;
   }
 }
