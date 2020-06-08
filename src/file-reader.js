@@ -1,18 +1,12 @@
 // The Scan iterator retrieves one row at a time. This is not so important
 // for the example tables in this takehome, but in reality table files
 // are very large. We would not want to read the whole thing at one time.
-
-const lineReader = require("line-reader");
-const util = require("util");
-const CONSTS = require("./consts");
-const config = require("./config");
-const path = require("path");
-
-const open = util.promisify(lineReader.open);
-const CLOSING_BRACKET = "]";
-const fileCache = {};
+//
+// P.S. I had a bunch of code in here to cache line reads from the file, but it was
+// getting pretty complicated for a take home [I worry this is already complicated enough :)]
+//
 // e.g.
-// {
+// const fileCache = {
 //   "/examples/a.table.json": {
 //     complete: true,
 //     lines: [
@@ -25,22 +19,24 @@ const fileCache = {};
 //     ],
 //   },
 // };
+//
+
+const lineReader = require("line-reader");
+const util = require("util");
+const CONSTS = require("./consts");
+const config = require("./config");
+const path = require("path");
+
+const open = util.promisify(lineReader.open);
+const CLOSING_BRACKET = "]";
 
 class Reader {
   constructor(sourceTableName) {
     this.linesRead = 0;
-    this.hasReadAllLines = false;
     this.absoluteFilePath = path.resolve(
       config.TABLE_FOLDER,
       `${sourceTableName}.table.json`
     );
-    // if there is no cache for file create one
-    if (!fileCache[this.absoluteFilePath]) {
-      fileCache[this.absoluteFilePath] = {
-        complete: false,
-        lines: [],
-      };
-    }
   }
 
   async _initializeModule() {
@@ -51,18 +47,7 @@ class Reader {
     return {
       original: thirdPartyReader,
       close: close,
-      readerLineCount: 0,
-      nextLine: async function () {
-        let row;
-        if (fileCache[self.absoluteFilePath].lines[this.readerLineCount]) {
-          row = fileCache[self.absoluteFilePath].lines[this.readerLineCount];
-        } else {
-          row = await nextLine();
-          fileCache[self.absoluteFilePath].lines[this.readerLineCount] = row;
-        }
-        this.readerLineCount++;
-        return row;
-      },
+      nextLine: nextLine,
     };
   }
 
@@ -72,28 +57,23 @@ class Reader {
   }
 
   async nextRow() {
-    if (!fileCache[this.absoluteFilePath].complete && !this.reader) {
-      this.reader = await this._initializeModule();
-    }
-
-    console.log(this.linesRead);
-    if (this.linesRead === 0) {
-      const openingBracket = await this._nextRow();
-      const columnDefinitions = await this._nextRow();
-      console.log('col', columnDefinitions);
-    }
-
-    if (this.hasReadAllLines) {
+    if (this.status === CONSTS.ITERATOR_STATUS.FINISHED) {
       return CONSTS.END;
     }
 
+    if (!this.reader) {
+      this.reader = await this._initializeModule();
+    }
+
+    if (this.linesRead === 0) {
+      const openingBracket = await this._nextRow();
+      const columnDefinitions = await this._nextRow();
+    }
+
     let row = await this._nextRow();
-    console.log('umm', row);
     if (row === CLOSING_BRACKET) {
       // there will be no more rows of usable data, regardless of the file having more lines
       await this.reader.close();
-      this.hasReadAllLines = true;
-      fileCache[this.absoluteFilePath].complete = true;
       return CONSTS.END;
     } else {
       return row;

@@ -41,7 +41,7 @@ class Project extends BaseIterator {
       return this.newDefinitions;
     }
     this.newDefinitions = newOrder.map((colIdx, i) => {
-      return [this.descriptions[i].name, row.definitions[i][2]];
+      return [this.descriptions[i].name, row.definitions[colIdx][2]];
     });
     return this.newDefinitions;
   }

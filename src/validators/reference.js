@@ -30,7 +30,6 @@ function checkAllColumnRefs(columnRefs, tableMap) {
     if (table === null) {
       const found = utils.findInAllTables(name, tableMap);
       if (found.length > 1) {
-        console.log("hel");
         throw makeAmbiguityError(name, found);
       }
     } else {

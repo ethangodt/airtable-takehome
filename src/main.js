@@ -44,7 +44,7 @@ if (require.main === module) {
   main()
     .catch((err) => {
       // single global error handler
-      write(`\nERROR: ${err.message}\n`);
+      write(`ERROR: ${err.message}\n`);
     })
     .finally(() => {
       config.OUTPUT_STREAM.end();

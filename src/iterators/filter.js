@@ -1,12 +1,6 @@
 const BaseIterator = require("./base-iterator");
 const CONSTS = require("../consts");
 
-// {
-//   "op": ">",
-//     "left": {"column": {"name": "distance", "table": null}},
-//   "right": {"column": {"name": "age", "table": "a2"}}
-// },
-
 class Filter extends BaseIterator {
   constructor(predicates, child) {
     super([child]);
