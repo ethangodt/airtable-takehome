@@ -9,7 +9,7 @@ const Join = require("./iterators/join");
 const Filter = require("./iterators/filter");
 const Project = require("./iterators/project");
 
-module.exports = function planner(query) {
+module.exports = function plan(query) {
   // we'll always have froms to scan
   const scans = query.from.map((f) => new Scan(f.name, f.source));
   let node;

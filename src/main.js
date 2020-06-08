@@ -1,14 +1,14 @@
-const planner = require("./planner");
+const plan = require("./plan");
+const validate = require("./validators");
 const fs = require("fs");
 const CONSTS = require("./consts");
 const config = require("./config");
 
 async function main() {
   const query = loadJsonFromFile(config.SQL_JSON_FILE);
-  // validate
-  const node = planner(query);
+  validate();
+  const node = plan(query);
   await outputResult(node);
-  config.OUTPUT_STREAM.end();
 }
 
 async function outputResult(node) {
@@ -41,5 +41,12 @@ function loadJsonFromFile(path) {
 }
 
 if (require.main === module) {
-  main();
+  main()
+    .catch((err) => {
+      // single global error handler
+      write(`\nERROR: ${err.message}\n`);
+    })
+    .finally(() => {
+      config.OUTPUT_STREAM.end();
+    });
 }
