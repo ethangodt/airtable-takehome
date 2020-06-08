@@ -16,7 +16,6 @@ const CONSTS = require("../consts");
 class Join extends BaseIterator {
   constructor(children) {
     super(children);
-    this.children = children;
     this.join = [];
     this.sent = 0;
   }
@@ -65,14 +64,14 @@ function crossTwo(a, b) {
 }
 
 function crossN(tables) {
-  const lastTwo = crossTwo(
+  const lastTwoCrossed = crossTwo(
     tables[tables.length - 2],
     tables[tables.length - 1]
   );
   if (tables.length === 2) {
-    return lastTwo;
+    return lastTwoCrossed;
   } else {
-    return crossN([...tables.slice(0, tables.length - 2), lastTwo]);
+    return crossN([...tables.slice(0, tables.length - 2), lastTwoCrossed]);
   }
 }
 

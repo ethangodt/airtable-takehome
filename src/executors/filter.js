@@ -9,8 +9,7 @@ const CONSTS = require("../consts");
 
 class Filter extends BaseIterator {
   constructor(predicates, child) {
-    super();
-    this.child = child;
+    super([child]);
     this.predicates = predicates.map(makePredicate.bind(this));
   }
 
@@ -38,7 +37,13 @@ class Filter extends BaseIterator {
 
 function makePredicate({ op, left, right }) {
   return (row) => {
-    return comparisons[op](row.getCell(left), row.getCell(right));
+    let leftValue =
+      left.literal !== undefined ? left.literal : row.getCellValue(left.column);
+    let rightValue =
+      right.literal !== undefined
+        ? right.literal
+        : row.getCellValue(right.column);
+    return comparisons[op](leftValue, rightValue);
   };
 }
 

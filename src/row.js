@@ -10,14 +10,13 @@ class Row {
     return new Row(newValues, newDefinitions);
   }
 
-  getCell(description) {
-    if (description.literal !== undefined) {
-      return description.literal;
-    }
-    const {
-      column: { name, table },
-    } = description;
-    const rowIdx = this.definitions.findIndex((col) => {
+  getCellValue({ name, table }) {
+    const colIdx = this.getColumnIndex({ name, table });
+    return this.values[colIdx];
+  }
+
+  getColumnIndex({ name, table }) {
+    return this.definitions.findIndex((col) => {
       let tableMatches = table === col[0];
       let columnNameMatches = name === col[1];
       if (!table) {
@@ -25,7 +24,6 @@ class Row {
       }
       return tableMatches && columnNameMatches;
     });
-    return this.values[rowIdx];
   }
 }
 

@@ -1,28 +1,37 @@
 const Scan = require("./executors/scan");
 const Join = require("./executors/join");
 const Filter = require("./executors/filter");
+const Project = require("./executors/project");
 
 async function start() {
-  const node = new Filter(
+  const node = new Project(
     [
-      {
-        op: ">",
-        left: { column: { name: "distance", table: null } },
-        right: { column: { name: "age", table: "a2" } },
-      },
-      {
-        op: "!=",
-        left: { column: { name: "name", table: "a1" } },
-        right: { literal: "Bob" },
-      },
+      { name: "a1_name", source: { name: "name", table: "a1" } },
+      { name: "age", source: { name: "age", table: "a1" } },
+      { name: "a2_name", source: { name: "name", table: "a2" } },
+      { name: "distance", source: { name: "distance", table: "b" } },
     ],
-    new Join([
-      new Scan("a1", "examples/a.table.json"),
-      new Scan("a2", "examples/a.table.json"),
-      new Scan("b", "examples/b.table.json"),
-    ])
+    new Filter(
+      [
+        {
+          op: ">",
+          left: { column: { name: "distance", table: null } },
+          right: { column: { name: "age", table: "a2" } },
+        },
+        {
+          op: "!=",
+          left: { column: { name: "name", table: "a1" } },
+          right: { literal: "Bob" },
+        },
+      ],
+      new Join([
+        new Scan("a1", "examples/a.table.json"),
+        new Scan("a2", "examples/a.table.json"),
+        new Scan("b", "examples/b.table.json"),
+      ])
+    )
   );
-  console.log('final', await node.pull());
+  console.log("final", await node.pull());
   console.log(await node.pull());
   console.log(await node.pull());
   console.log(await node.pull());
