@@ -6,7 +6,7 @@ const config = require("./config");
 
 async function main() {
   const query = loadJsonFromFile(config.SQL_JSON_FILE);
-  validate();
+  await validate(query);
   const node = plan(query);
   await outputResult(node);
 }

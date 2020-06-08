@@ -5,6 +5,8 @@
 const lineReader = require("line-reader");
 const util = require("util");
 const CONSTS = require("./consts");
+const config = require("./config");
+const path = require("path");
 
 const open = util.promisify(lineReader.open);
 const CLOSING_BRACKET = "]";
@@ -25,10 +27,13 @@ const fileCache = {};
 // };
 
 class Reader {
-  constructor(absoluteFilePath) {
+  constructor(sourceTableName) {
     this.linesRead = 0;
     this.hasReadAllLines = false;
-    this.absoluteFilePath = absoluteFilePath;
+    this.absoluteFilePath = path.resolve(
+      config.TABLE_FOLDER,
+      `${sourceTableName}.table.json`
+    );
     // if there is no cache for file create one
     if (!fileCache[this.absoluteFilePath]) {
       fileCache[this.absoluteFilePath] = {

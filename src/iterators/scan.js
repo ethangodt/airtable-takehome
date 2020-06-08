@@ -12,13 +12,12 @@ const Reader = require("../file-reader");
 const CONSTS = require("../consts");
 const Row = require("../row");
 const config = require("../config");
+const utils = require("../utils");
 
 class Scan extends BaseIterator {
   constructor(tableName, sourceName) {
     super();
-    this.reader = new Reader(
-      path.resolve(config.TABLE_FOLDER, `${sourceName}.table.json`)
-    );
+    this.reader = new Reader(sourceName);
     this.tableName = tableName;
   }
 
@@ -32,7 +31,7 @@ class Scan extends BaseIterator {
       return CONSTS.END;
     } else {
       return new Row(
-        this.stringifyRow(rawRow),
+        utils.stringifyRow(rawRow),
         await this.getColumnDefinitions()
       );
     }
@@ -43,15 +42,10 @@ class Scan extends BaseIterator {
       return this.columnDefinitions;
     }
     const rawDefinitions = await this.reader.readLine(2);
-    this.columnDefinitions = this.stringifyRow(rawDefinitions).map((def) => {
+    this.columnDefinitions = utils.stringifyRow(rawDefinitions).map((def) => {
       return [this.tableName].concat(def);
     });
     return this.columnDefinitions;
-  }
-
-  stringifyRow(row) {
-    row = row[row.length - 1] === "," ? row.substring(0, row.length - 1) : row;
-    return JSON.parse(row);
   }
 }
 
