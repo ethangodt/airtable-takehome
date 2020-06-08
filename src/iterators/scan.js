@@ -13,9 +13,10 @@ const CONSTS = require("../consts");
 const Row = require("../row");
 
 class Scan extends BaseIterator {
-  constructor(tableName, fileName) {
+  constructor(tableName, sourceName) {
     super();
-    this.reader = new Reader(path.resolve(fileName));
+    // TODO update this
+    this.reader = new Reader(path.resolve(`examples/${sourceName}.table.json`));
     this.tableName = tableName;
   }
 
