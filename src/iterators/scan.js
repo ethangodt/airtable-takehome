@@ -11,12 +11,14 @@ const BaseIterator = require("./base-iterator");
 const Reader = require("../file-reader");
 const CONSTS = require("../consts");
 const Row = require("../row");
+const config = require("../config");
 
 class Scan extends BaseIterator {
   constructor(tableName, sourceName) {
     super();
-    // TODO update this
-    this.reader = new Reader(path.resolve(`examples/${sourceName}.table.json`));
+    this.reader = new Reader(
+      path.resolve(config.TABLE_FOLDER, `${sourceName}.table.json`)
+    );
     this.tableName = tableName;
   }
 
